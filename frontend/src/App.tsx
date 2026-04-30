@@ -23,9 +23,6 @@ import {
   Play
 } from 'lucide-react';
 import { Product, Order, View } from './types';
-import { GoogleGenAI, Type } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // --- MOCK DATA ---
 const INITIAL_PRODUCTS: Product[] = [
@@ -276,54 +273,14 @@ function ProductManagement({ products, setProducts }: { products: Product[], set
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsRecognizing(true);
-    try {
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const res = reader.result as string;
-          resolve(res.split(',')[1]);
-        };
-        reader.readAsDataURL(file);
-      });
+    setEditingProduct({
+      id: 'new-' + Date.now(),
+      name: '识别出的商品',
+      price: 99,
+      stock: 50
+    });
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: {
-          parts: [
-            { inlineData: { data: base64, mimeType: file.type } },
-            { text: "Identify this product and return its name, a suggested price in CNY (number), and a typical initial stock level (number). Return ONLY a JSON object." }
-          ]
-        },
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              name: { type: Type.STRING },
-              price: { type: Type.NUMBER },
-              stock: { type: Type.NUMBER }
-            },
-            required: ["name", "price", "stock"]
-          }
-        }
-      });
-
-      const result = JSON.parse(response.text);
-      setEditingProduct({
-        id: 'new-' + Date.now(),
-        name: result.name || '识别出的商品',
-        price: result.price || 99,
-        stock: result.stock || 50
-      });
-      // We set editingProduct as a new one to let user confirm/save it
-    } catch (error) {
-      console.error("Recognition failed:", error);
-      alert("识别失败，请重试");
-    } finally {
-      setIsRecognizing(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -732,72 +689,37 @@ function SimulationCenter({
 
     setIsSimulating(true);
     
-    try {
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.readAsDataURL(file);
-      });
+    // 模拟数据
+    setTimeout(() => {
+      const mockItems = [
+        { name: '营养快线', quantity: 1, price: 5 },
+        { name: '元气水', quantity: 1, price: 3 }
+      ];
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: {
-          parts: [
-            { inlineData: { data: base64, mimeType: file.type } },
-            { text: "This is a photo inside a smart vending machine after a user closed the door. Identify what items look like they were JUST PICKED UP or are clearly present and should be billed. Return a JSON array of items: [{ \"name\": \"product name\", \"quantity\": 1, \"price\": 5 }]." }
-          ]
-        },
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                quantity: { type: Type.NUMBER },
-                price: { type: Type.NUMBER },
-              },
-              required: ["name", "quantity", "price"]
-            }
-          }
+      const newOrders: Order[] = mockItems.map((item) => ({
+        id: 'SIM-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
+        productName: item.name,
+        quantity: item.quantity,
+        singlePrice: item.price,
+        totalPrice: item.price * item.quantity,
+        date: new Date().toISOString().split('T')[0],
+        status: 'Completed'
+      }));
+
+      setOrders(prev => [...newOrders, ...prev]);
+      
+      setProducts(prev => prev.map(p => {
+        const matched = mockItems.find(i => i.name === p.name);
+        if (matched) {
+          return { ...p, stock: Math.max(0, p.stock - matched.quantity) };
         }
-      });
-
-      const items = JSON.parse(response.text);
-      if (items.length > 0) {
-        // Generate Orders
-        const newOrders: Order[] = items.map((item: any) => ({
-          id: 'SIM-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
-          productName: item.name,
-          quantity: item.quantity,
-          singlePrice: item.price,
-          totalPrice: item.price * item.quantity,
-          date: new Date().toISOString().split('T')[0],
-          status: 'Completed'
-        }));
-
-        setOrders(prev => [...newOrders, ...prev]);
-        
-        // Update Stock (Simulated)
-        setProducts(prev => prev.map(p => {
-          const matched = items.find((i: any) => i.name === p.name);
-          if (matched) {
-            return { ...p, stock: Math.max(0, p.stock - matched.quantity) };
-          }
-          return p;
-        }));
-        alert(`识别成功！已自动结算: ${items.map((i: any) => i.name).join(', ')}`);
-      } else {
-        alert("未检测到商品变化");
-      }
-    } catch (error) {
-      console.error("Simulation failed:", error);
-      alert("模拟识别服务异常");
-    } finally {
+        return p;
+      }));
+      
       setIsSimulating(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+      alert(`识别成功！已自动结算: ${mockItems.map(i => i.name).join(', ')}`);
+    }, 1000);
   };
 
   return (
