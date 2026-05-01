@@ -1,0 +1,4 @@
+runs/detect/predict
+datas/
+.idea/
+**/__pycache__/

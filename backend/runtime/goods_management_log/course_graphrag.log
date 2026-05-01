@@ -1,0 +1,419 @@
+2026-05-01 22:04:16,197 api_record_util.py-28324-[line:31] ERROR  [POST /goodsmanager/v1/users/captcha 500]  Internal server error: Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 685, in __getattr__
+    return self._state[key]
+           ~~~~~~~~~~~^^^^^
+KeyError: 'aioredis'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\utils\api_record_util.py", line 20, in custom_route_handler
+    response: Response = await original_route_handler(request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\routing.py", line 457, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\dependencies\utils.py", line 678, in solve_dependencies
+    solved = await call(**solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\depends\redis.py", line 6, in get_aioredis
+    return request.app.state.aioredis
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 688, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'aioredis'
+
+2026-05-01 22:04:16,198 api_record_util.py-28324-[line:63] ERROR  [POST /goodsmanager/v1/users/captcha 500] Host: localhost:8088 process time: 0.02, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:04:33,361 api_record_util.py-28324-[line:31] ERROR  [POST /goodsmanager/v1/users/captcha 500]  Internal server error: Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 685, in __getattr__
+    return self._state[key]
+           ~~~~~~~~~~~^^^^^
+KeyError: 'aioredis'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\utils\api_record_util.py", line 20, in custom_route_handler
+    response: Response = await original_route_handler(request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\routing.py", line 457, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\dependencies\utils.py", line 678, in solve_dependencies
+    solved = await call(**solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\depends\redis.py", line 6, in get_aioredis
+    return request.app.state.aioredis
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 688, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'aioredis'
+
+2026-05-01 22:04:33,362 api_record_util.py-28324-[line:63] ERROR  [POST /goodsmanager/v1/users/captcha 500] Host: localhost:8088 process time: 0.0, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "31"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:07:54,636 api_record_util.py-28324-[line:31] ERROR  [POST /goodsmanager/v1/users/captcha 500]  Internal server error: Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 685, in __getattr__
+    return self._state[key]
+           ~~~~~~~~~~~^^^^^
+KeyError: 'aioredis'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\utils\api_record_util.py", line 20, in custom_route_handler
+    response: Response = await original_route_handler(request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\routing.py", line 457, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\fastapi\dependencies\utils.py", line 678, in solve_dependencies
+    solved = await call(**solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\depends\redis.py", line 6, in get_aioredis
+    return request.app.state.aioredis
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\starlette\datastructures.py", line 688, in __getattr__
+    raise AttributeError(message.format(self.__class__.__name__, key))
+AttributeError: 'State' object has no attribute 'aioredis'
+
+2026-05-01 22:07:54,637 api_record_util.py-28324-[line:63] ERROR  [POST /goodsmanager/v1/users/captcha 500] Host: localhost:8088 process time: 0.0, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "31"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:08:29,619 email_util.py-10572-[line:35] ERROR  邮件发送失败：(535, b'Error: authentication failed')
+2026-05-01 22:08:29,637 api_record_util.py-10572-[line:26] WARNING  [POST /goodsmanager/v1/users/captcha 400]  HTTPException: 验证码发送失败
+2026-05-01 22:08:29,638 api_record_util.py-10572-[line:61] WARNING  [POST /goodsmanager/v1/users/captcha 400] Host: localhost:8088 process time: 0.78, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "31"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:09:51,358 email_util.py-10572-[line:35] ERROR  邮件发送失败：(535, b'Error: authentication failed')
+2026-05-01 22:09:51,359 api_record_util.py-10572-[line:26] WARNING  [POST /goodsmanager/v1/users/captcha 400]  HTTPException: 验证码发送失败
+2026-05-01 22:09:51,360 api_record_util.py-10572-[line:61] WARNING  [POST /goodsmanager/v1/users/captcha 400] Host: localhost:8088 process time: 3.11, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:12:36,355 email_util.py-25328-[line:35] ERROR  邮件发送失败：(535, b'Error: authentication failed')
+2026-05-01 22:12:36,363 api_record_util.py-25328-[line:26] WARNING  [POST /goodsmanager/v1/users/captcha 400]  HTTPException: 验证码发送失败
+2026-05-01 22:12:36,364 api_record_util.py-25328-[line:61] WARNING  [POST /goodsmanager/v1/users/captcha 400] Host: localhost:8088 process time: 2.28, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:13:51,458 email_util.py-37300-[line:32] INFO  邮件发送成功！
+2026-05-01 22:13:51,468 api_record_util.py-37300-[line:58] DEBUG  [POST /goodsmanager/v1/users/captcha 200] Host: localhost:8088 process time: 2.5, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:15:25,875 user.py-37300-[line:101] ERROR  登录或注册失败: 'account' is an invalid keyword argument for DBUser
+2026-05-01 22:15:25,881 user.py-37300-[line:102] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\user.py", line 83, in login_or_register
+    created_user = user_dao.create_user(db, new_user)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\daos\user_dao.py", line 40, in create_user
+    dbuser = DBUser(
+             ^^^^^^^
+  File "<string>", line 4, in __init__
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 596, in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 594, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2179, in _declarative_constructor
+    raise TypeError(
+TypeError: 'account' is an invalid keyword argument for DBUser
+
+2026-05-01 22:15:25,881 api_record_util.py-37300-[line:26] WARNING  [POST /goodsmanager/v1/users/login 500]  HTTPException: 登录或注册失败，请稍后重试
+2026-05-01 22:15:25,881 api_record_util.py-37300-[line:63] ERROR  [POST /goodsmanager/v1/users/login 500] Host: localhost:8088 process time: 0.02, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:17:21,690 user.py-37300-[line:101] ERROR  登录或注册失败: 'account' is an invalid keyword argument for DBUser
+2026-05-01 22:17:21,692 user.py-37300-[line:102] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\user.py", line 83, in login_or_register
+    created_user = user_dao.create_user(db, new_user)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\daos\user_dao.py", line 40, in create_user
+    dbuser = DBUser(
+             ^^^^^^^
+  File "<string>", line 4, in __init__
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 596, in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 594, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2179, in _declarative_constructor
+    raise TypeError(
+TypeError: 'account' is an invalid keyword argument for DBUser
+
+2026-05-01 22:17:21,692 api_record_util.py-37300-[line:26] WARNING  [POST /goodsmanager/v1/users/login 500]  HTTPException: 登录或注册失败，请稍后重试
+2026-05-01 22:17:21,693 api_record_util.py-37300-[line:63] ERROR  [POST /goodsmanager/v1/users/login 500] Host: localhost:8088 process time: 0.01, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:17:27,416 user.py-37300-[line:101] ERROR  登录或注册失败: 'account' is an invalid keyword argument for DBUser
+2026-05-01 22:17:27,417 user.py-37300-[line:102] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\user.py", line 83, in login_or_register
+    created_user = user_dao.create_user(db, new_user)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\daos\user_dao.py", line 40, in create_user
+    dbuser = DBUser(
+             ^^^^^^^
+  File "<string>", line 4, in __init__
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 596, in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 594, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2179, in _declarative_constructor
+    raise TypeError(
+TypeError: 'account' is an invalid keyword argument for DBUser
+
+2026-05-01 22:17:27,417 api_record_util.py-37300-[line:26] WARNING  [POST /goodsmanager/v1/users/login 500]  HTTPException: 登录或注册失败，请稍后重试
+2026-05-01 22:17:27,417 api_record_util.py-37300-[line:63] ERROR  [POST /goodsmanager/v1/users/login 500] Host: localhost:8088 process time: 0.0, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:18:59,922 email_util.py-16652-[line:32] INFO  邮件发送成功！
+2026-05-01 22:18:59,931 api_record_util.py-16652-[line:58] DEBUG  [POST /goodsmanager/v1/users/captcha 200] Host: localhost:8088 process time: 0.45, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:19:17,444 user.py-16652-[line:101] ERROR  登录或注册失败: 'avatar_url' is an invalid keyword argument for DBUser
+2026-05-01 22:19:17,446 user.py-16652-[line:102] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\user.py", line 83, in login_or_register
+    created_user = user_dao.create_user(db, new_user)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\daos\user_dao.py", line 40, in create_user
+    dbuser = DBUser(
+             ^^^^^^^
+  File "<string>", line 4, in __init__
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 596, in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state.py", line 594, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\decl_base.py", line 2179, in _declarative_constructor
+    raise TypeError(
+TypeError: 'avatar_url' is an invalid keyword argument for DBUser
+
+2026-05-01 22:19:17,447 api_record_util.py-16652-[line:26] WARNING  [POST /goodsmanager/v1/users/login 500]  HTTPException: 登录或注册失败，请稍后重试
+2026-05-01 22:19:17,448 api_record_util.py-16652-[line:63] ERROR  [POST /goodsmanager/v1/users/login 500] Host: localhost:8088 process time: 0.01, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:20:04,451 api_record_util.py-9628-[line:58] DEBUG  [POST /goodsmanager/v1/users/login 200] Host: localhost:8088 process time: 0.05, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["pragma", "no-cache"], ["cache-control", "no-cache"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer null"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:25:11,160 email_util.py-9628-[line:32] INFO  邮件发送成功！
+2026-05-01 22:25:11,160 api_record_util.py-9628-[line:58] DEBUG  [POST /goodsmanager/v1/users/captcha 200] Host: localhost:8088 process time: 0.68, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "29"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhY2Y4MDBkMS0yODdmLTRjZDUtOTE0NC1jZTAxNzFhM2Q5MTYiLCJleHAiOjE3NzgyNTAwMDR9.PiY843EL9DGibcRSLGTtbOyoDu7Ierbuadt3_z3KlnU"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 22:25:22,598 api_record_util.py-9628-[line:58] DEBUG  [POST /goodsmanager/v1/users/login 200] Host: localhost:8088 process time: 0.0, params: [], headers: [["host", "localhost:8088"], ["connection", "keep-alive"], ["content-length", "45"], ["sec-ch-ua-platform", "\"Windows\""], ["authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhY2Y4MDBkMS0yODdmLTRjZDUtOTE0NC1jZTAxNzFhM2Q5MTYiLCJleHAiOjE3NzgyNTAwMDR9.PiY843EL9DGibcRSLGTtbOyoDu7Ierbuadt3_z3KlnU"], ["user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0"], ["sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\""], ["content-type", "application/json"], ["sec-ch-ua-mobile", "?0"], ["accept", "*/*"], ["origin", "http://localhost:3000"], ["sec-fetch-site", "same-site"], ["sec-fetch-mode", "cors"], ["sec-fetch-dest", "empty"], ["referer", "http://localhost:3000/"], ["accept-encoding", "gzip, deflate, br, zstd"], ["accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"]]
+2026-05-01 23:24:37,152 orders.py-36432-[line:171] ERROR  模拟下单失败: (sqlite3.IntegrityError) NOT NULL constraint failed: orders.goods_id
+[SQL: INSERT INTO orders (id, goods_id, quantity, single_price, total_price, order_time, status) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING created_time, updated_time]
+[parameters: ('ccffc734-9cf1-4353-8597-0ac9038a5c9d', None, 0, 0.0, 0.0, '2026-05-01 23:24:37.149779', 'Cancelled')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-05-01 23:24:37,171 orders.py-36432-[line:172] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.IntegrityError: NOT NULL constraint failed: orders.goods_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 132, in simulate_orders
+    order = orders_dao.create_order(
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\daos\orders_dao.py", line 59, in create_order
+    db.commit()
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: orders.goods_id
+[SQL: INSERT INTO orders (id, goods_id, quantity, single_price, total_price, order_time, status) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING created_time, updated_time]
+[parameters: ('ccffc734-9cf1-4353-8597-0ac9038a5c9d', None, 0, 0.0, 0.0, '2026-05-01 23:24:37.149779', 'Cancelled')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2026-05-01 23:41:40,289 orders.py-35044-[line:171] ERROR  模拟下单失败: 1 validation error for OrderOut
+goods_id
+  UUID input should be a string, bytes or UUID object [type=uuid_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/uuid_type
+2026-05-01 23:41:40,293 orders.py-35044-[line:172] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 142, in simulate_orders
+    return [OrderOut(**order_dict)]
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+goods_id
+  UUID input should be a string, bytes or UUID object [type=uuid_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/uuid_type
+
+2026-05-01 23:41:46,977 orders.py-35044-[line:171] ERROR  模拟下单失败: 1 validation error for OrderOut
+goods_id
+  UUID input should be a string, bytes or UUID object [type=uuid_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/uuid_type
+2026-05-01 23:41:46,979 orders.py-35044-[line:172] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 142, in simulate_orders
+    return [OrderOut(**order_dict)]
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+goods_id
+  UUID input should be a string, bytes or UUID object [type=uuid_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/uuid_type
+
+2026-05-01 23:42:47,912 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:42:47,914 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:42:47,919 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:42:47,920 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:42:52,761 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:42:52,762 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:42:52,768 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:42:52,769 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:43:07,449 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:43:07,449 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:43:07,456 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:43:07,457 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:45:16,967 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:45:16,968 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
+2026-05-01 23:45:16,976 orders.py-17184-[line:45] ERROR  获取订单列表失败: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+2026-05-01 23:45:16,977 orders.py-17184-[line:46] ERROR  Traceback (most recent call last):
+  File "E:\Class_Code\yolo_for_goods\yolo_for_goods\backend\apis\orders.py", line 41, in get_orders_list
+    items.append(OrderOut(**order_dict))
+                 ^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Class_Code\yolo_for_goods\venv\Lib\site-packages\pydantic\main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OrderOut
+product_name
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.13/v/string_type
+
