@@ -5,14 +5,19 @@ export interface Product {
   stock: number;
 }
 
+export interface GoodsInfoItem {
+  goods_id: string | null;
+  name: string;
+  quantity: number;
+  single_price: number;
+}
+
 export interface Order {
   id: string;
-  productName: string;
-  quantity: number;
-  singlePrice: number;
-  totalPrice: number;
-  date: string;
-  status: 'Pending' | 'Completed' | 'Shipped';
+  goods_info: GoodsInfoItem[] | null;
+  total_price: number;
+  order_time: string;
+  status: 'Pending' | 'Completed' | 'Shipped' | 'Cancelled';
 }
 
 export type View = 'products' | 'orders' | 'simulation';

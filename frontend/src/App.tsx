@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -20,56 +20,88 @@ import {
   Edit2,
   Camera,
   Loader2,
-  Play
+  Play,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 import { Product, Order, View } from './types';
+import { userApi, goodsApi, ordersApi } from './api';
 
-// --- MOCK DATA ---
-const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', name: '极简白瓷杯', price: 88, stock: 120 },
-  { id: '2', name: '商务蓝牙耳机', price: 299, stock: 45 },
-  { id: '3', name: '智能温控办公椅', price: 1299, stock: 12 },
-  { id: '4', name: '金属触控台灯', price: 159, stock: 88 },
-];
+interface Toast {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 
-const INITIAL_ORDERS: Order[] = [
-  { id: 'ORD-001', productName: '极简白瓷杯', quantity: 2, singlePrice: 88, totalPrice: 176, date: '2024-04-30', status: 'Completed' },
-  { id: 'ORD-002', productName: '商务蓝牙耳机', quantity: 1, singlePrice: 299, totalPrice: 299, date: '2024-04-29', status: 'Shipped' },
-  { id: 'ORD-003', productName: '智能温控办公椅', quantity: 1, singlePrice: 1299, totalPrice: 1299, date: '2024-04-28', status: 'Pending' },
-  { id: 'ORD-004', productName: '金属触控台灯', quantity: 3, singlePrice: 159, totalPrice: 477, date: '2024-04-27', status: 'Completed' },
-  { id: 'ORD-005', productName: '极简白瓷杯', quantity: 5, singlePrice: 88, totalPrice: 440, date: '2024-04-26', status: 'Shipped' },
-  { id: 'ORD-006', productName: '商务蓝牙耳机', quantity: 2, singlePrice: 299, totalPrice: 598, date: '2024-04-25', status: 'Completed' },
-  { id: 'ORD-007', productName: '金属触控台灯', quantity: 1, singlePrice: 159, totalPrice: 159, date: '2024-04-24', status: 'Pending' },
-];
+let toastId = 0;
+const toasts: Toast[] = [];
+const toastListeners: Set<() => void> = new Set();
+
+function showToast(message: string, type: 'success' | 'error' | 'info' = 'success') {
+  const id = ++toastId;
+  toasts.push({ id, message, type });
+  toastListeners.forEach(fn => fn());
+  setTimeout(() => {
+    const index = toasts.findIndex(t => t.id === id);
+    if (index > -1) toasts.splice(index, 1);
+    toastListeners.forEach(fn => fn());
+  }, 3000);
+}
+
+function ToastContainer() {
+  const [, forceUpdate] = useState(0);
+  
+  useEffect(() => {
+    const listener = () => forceUpdate(n => n + 1);
+    toastListeners.add(listener);
+    return () => { toastListeners.delete(listener); };
+  }, []);
+
+  if (toasts.length === 0) return null;
+
+  return (
+    <div className="fixed top-4 right-4 z-[100] space-y-2">
+      <AnimatePresence>
+        {toasts.map(toast => (
+          <motion.div
+            key={toast.id}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${
+              toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`}
+          >
+            {toast.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+            {toast.message}
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <AppContent />
+      <ToastContainer />
     </BrowserRouter>
   );
 }
 
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-  const [user] = useState({ name: 'Admin User' });
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [user, setUser] = useState<{ name: string } | null>(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const u = JSON.parse(savedUser);
+      return { name: u.username || u.email };
+    }
+    return null;
+  });
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Persistence
-  useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
-    if (savedProducts) setProducts(JSON.parse(savedProducts));
-    const savedOrders = localStorage.getItem('orders');
-    if (savedOrders) setOrders(JSON.parse(savedOrders));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(products));
-    localStorage.setItem('orders', JSON.stringify(orders));
-  }, [products, orders]);
 
   if (!isLoggedIn && location.pathname !== '/login') {
     return <Navigate to="/login" replace />;
@@ -78,26 +110,33 @@ function AppContent() {
   return (
     <Routes>
       <Route path="/login" element={<LoginScreen onLogin={() => { setIsLoggedIn(true); navigate('/products'); }} />} />
-      <Route path="/" element={<Layout user={user} setIsLoggedIn={setIsLoggedIn} products={products} setProducts={setProducts} orders={orders} setOrders={setOrders} />}>
+      <Route path="/" element={user ? <Layout user={user} setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" replace />}>
         <Route index element={<Navigate to="/products" replace />} />
-        <Route path="products" element={<ProductManagement products={products} setProducts={setProducts} />} />
-        <Route path="orders" element={<OrderManagement orders={orders} />} />
-        <Route path="simulation" element={<SimulationCenter orders={orders} setOrders={setOrders} products={products} setProducts={setProducts} />} />
+        <Route path="products" element={<ProductManagement />} />
+        <Route path="orders" element={<OrderManagement />} />
+        <Route path="simulation" element={<SimulationCenter />} />
       </Route>
     </Routes>
   );
 }
 
-function Layout({ user, setIsLoggedIn, products, setProducts, orders, setOrders }: { 
+function Layout({ user, setIsLoggedIn }: { 
   user: { name: string }, 
   setIsLoggedIn: (val: boolean) => void,
-  products: Product[],
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>,
-  orders: Order[],
-  setOrders: React.Dispatch<React.SetStateAction<Order[]>>
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await userApi.logout();
+    } catch (err) {
+      console.error('退出失败', err);
+    } finally {
+      setIsLoggedIn(false);
+      navigate('/login');
+    }
+  };
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-700 font-sans overflow-hidden">
@@ -140,7 +179,7 @@ function Layout({ user, setIsLoggedIn, products, setProducts, orders, setOrders 
             <p className="text-sm font-semibold text-slate-900 tracking-tight">管理员</p>
           </div>
           <button 
-            onClick={() => { setIsLoggedIn(false); navigate('/login'); }}
+            onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all cursor-pointer"
           >
             <LogOut size={14} />
@@ -159,9 +198,9 @@ function Layout({ user, setIsLoggedIn, products, setProducts, orders, setOrders 
             exit={{ opacity: 0, x: -10 }}
             className="h-full"
           >
-            {location.pathname === '/products' && <ProductManagement products={products} setProducts={setProducts} />}
-            {location.pathname === '/orders' && <OrderManagement orders={orders} />}
-            {location.pathname === '/simulation' && <SimulationCenter orders={orders} setOrders={setOrders} products={products} setProducts={setProducts} />}
+            {location.pathname === '/products' && <ProductManagement />}
+            {location.pathname === '/orders' && <OrderManagement />}
+            {location.pathname === '/simulation' && <SimulationCenter />}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -188,6 +227,66 @@ function NavButton({ active, onClick, icon, label }: { active: boolean, onClick:
 }
 
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const [email, setEmail] = useState(localStorage.getItem('login_email') || '');
+  const [code, setCode] = useState('');
+  const [sendingCaptcha, setSendingCaptcha] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(0);
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    localStorage.setItem('login_email', value);
+  };
+
+  const handleSendCaptcha = async () => {
+    if (!email) {
+      setError('请输入邮箱');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('请输入正确的邮箱格式');
+      return;
+    }
+    setSendingCaptcha(true);
+    setError('');
+    try {
+      await userApi.sendCaptcha(email);
+      setCountdown(60);
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSendingCaptcha(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!code) {
+      setError('请输入验证码');
+      return;
+    }
+    setLoggingIn(true);
+    setError('');
+    try {
+      await userApi.login({ email, code });
+      onLogin();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
       <motion.div 
@@ -199,32 +298,45 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center text-white mx-auto mb-6">
             <LayoutDashboard size={24} />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">登录系统</h2>
-          <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-semibold">Geometric Balance Interface</p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">自助贩卖机商品管理系统</h2>
+          <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-semibold">Vending Machine Management</p>
         </div>
         
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-400 uppercase">账号</label>
+            <label className="text-[11px] font-bold text-slate-400 uppercase">邮箱</label>
             <input 
-              type="text" 
-              defaultValue="admin"
+              type="email" 
+              value={email}
+              onChange={(e) => handleEmailChange(e.target.value)}
               className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-400 uppercase">密码</label>
-            <input 
-              type="password" 
-              defaultValue="123456"
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
-            />
+            <label className="text-[11px] font-bold text-slate-400 uppercase">验证码</label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
+              />
+              <button
+                onClick={handleSendCaptcha}
+                disabled={sendingCaptcha || countdown > 0}
+                className="px-3 py-2 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 whitespace-nowrap"
+              >
+                {countdown > 0 ? `${countdown}s` : sendingCaptcha ? '发送中...' : '获取验证码'}
+              </button>
+            </div>
           </div>
+          {error && <p className="text-xs text-red-500">{error}</p>}
           <button 
-            onClick={onLogin}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg mt-6 hover:bg-blue-700 active:scale-[0.98] transition-all duration-200 shadow-sm"
+            onClick={handleLogin}
+            disabled={loggingIn}
+            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg mt-6 hover:bg-blue-700 active:scale-[0.98] transition-all duration-200 shadow-sm disabled:opacity-50"
           >
-            开启管理
+            {loggingIn ? '登录中...' : '开启管理'}
           </button>
         </div>
       </motion.div>
@@ -232,36 +344,97 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   );
 }
 
-function ProductManagement({ products, setProducts }: { products: Product[], setProducts: React.Dispatch<React.SetStateAction<Product[]>>, key?: string }) {
+function ProductManagement({ key }: { key?: string }) {
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isRecognizing, setIsRecognizing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [sort, setSort] = useState<string>('');
+  const pageSize = 10;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
-  const handleAdd = (p: Omit<Product, 'id'>) => {
-    const newProduct = { ...p, id: Math.random().toString(36).substr(2, 9) };
-    setProducts([...products, newProduct]);
-    setIsModalOpen(false);
-  };
-
-  const handleUpdate = (p: Product) => {
-    if (p.id.startsWith('new-')) {
-      const newProduct = { ...p, id: Math.random().toString(36).substr(2, 9) };
-      setProducts([...products, newProduct]);
-    } else {
-      setProducts(products.map(item => item.id === p.id ? p : item));
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await goodsApi.getList(currentPage, pageSize, appliedSearch || undefined, sort);
+      setProducts(res.items);
+      setTotalCount(res.total_count);
+    } catch (err: any) {
+      console.error('加载商品失败:', err.message);
+    } finally {
+      setLoading(false);
     }
-    setEditingProduct(null);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  useEffect(() => {
+    setCurrentPage(1);
+    setEditingProduct(null);
+  }, [appliedSearch]);
+
+  useEffect(() => {
+    setEditingProduct(null);
+  }, [currentPage]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [currentPage, appliedSearch, sort]);
+
+  const handleSearch = () => {
+    setAppliedSearch(searchTerm);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleSort = (newSort: string) => {
+    setSort(prev => prev === newSort ? '' : newSort);
+  };
+
+  const handleAdd = async (p: Omit<Product, 'id'>) => {
+    try {
+      await goodsApi.create(p);
+      setIsModalOpen(false);
+      setCurrentPage(1);
+      loadProducts();
+      showToast('商品添加成功');
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleUpdate = async (p: Product) => {
+    try {
+      await goodsApi.update(p.id, { name: p.name, price: p.price, stock: p.stock });
+      setEditingProduct(null);
+      loadProducts();
+      showToast('商品更新成功');
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('确定要删除这个商品吗？')) {
-      setProducts(products.filter(p => p.id !== id));
+    if (!confirm('确定要删除这个商品吗？')) return;
+    try {
+      await goodsApi.delete(id);
       if (editingProduct?.id === id) setEditingProduct(null);
+      loadProducts();
+      showToast('商品删除成功');
+    } catch (err: any) {
+      showToast(err.message, 'error');
     }
   };
 
@@ -273,12 +446,17 @@ function ProductManagement({ products, setProducts }: { products: Product[], set
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setEditingProduct({
-      id: 'new-' + Date.now(),
-      name: '识别出的商品',
-      price: 99,
-      stock: 50
-    });
+    setIsRecognizing(true);
+    try {
+      const res = await goodsApi.recognize(file);
+      showToast(`识别完成！共识别 ${res.total} 个商品`);
+      setCurrentPage(1);
+      loadProducts();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    } finally {
+      setIsRecognizing(false);
+    }
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -288,15 +466,22 @@ function ProductManagement({ products, setProducts }: { products: Product[], set
       <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
         <h2 className="text-xl font-semibold text-slate-900">商品管理</h2>
         <div className="flex gap-3 items-center">
-          <div className="relative">
+          <div className="relative flex items-center">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             <input 
               type="text" 
               placeholder="搜索商品..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all w-48 focus:w-64"
+              onKeyDown={handleSearchKeyDown}
+              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all w-48 focus:w-64"
             />
+            <button 
+              onClick={handleSearch}
+              className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-lg hover:bg-blue-700 transition-colors border border-blue-600 border-l-0"
+            >
+              搜索
+            </button>
           </div>
           <input 
             type="file" 
@@ -324,123 +509,178 @@ function ProductManagement({ products, setProducts }: { products: Product[], set
       </header>
 
       <div className="flex-1 p-8 flex gap-8 overflow-hidden">
-        {/* Table Container */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
-          <div className="overflow-auto flex-1">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-50/50 border-b border-slate-100 sticky top-0 z-10">
-                <tr className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
-                  <th className="px-6 py-4">商品名称</th>
-                  <th className="px-6 py-4">销售价格</th>
-                  <th className="px-6 py-4">当前库存</th>
-                  <th className="px-6 py-4 text-right">操作</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm divide-y divide-slate-50">
-                {filteredProducts.map(product => (
-                  <tr 
-                    key={product.id}
-                    onClick={() => setEditingProduct(product)}
-                    className={`hover:bg-blue-50/30 transition-all group cursor-pointer border-l-2 ${
-                      editingProduct?.id === product.id ? 'border-l-blue-500 bg-blue-50/50' : 'border-l-transparent hover:border-l-blue-500'
-                    }`}
-                  >
-                    <td className="px-6 py-4 font-medium text-slate-900">{product.name}</td>
-                    <td className="px-6 py-4 text-slate-500">¥{product.price.toLocaleString()}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        product.stock < 10 ? 'bg-red-50 text-red-700' : product.stock < 50 ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'
-                      }`}>
-                        {product.stock} 件
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={(e) => handleDelete(product.id, e)}
-                        className="text-slate-400 hover:text-red-500 transition-colors"
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2 size={32} className="animate-spin text-blue-600" />
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
+              <div className="overflow-auto flex-1">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-white sticky top-0 z-10">
+                    <tr className="text-xs uppercase tracking-wider text-slate-400 font-semibold border-b border-slate-100">
+                      <th className="px-6 py-4">商品名称</th>
+                      <th 
+                        className="px-6 py-4 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                        onClick={() => handleSort(sort === 'price_desc' ? 'price_asc' : sort === 'price_asc' ? '' : 'price_desc')}
                       >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Edit Panel */}
-        <div className="w-80 bg-white border border-blue-100 rounded-xl shadow-sm p-6 flex flex-col shrink-0">
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-1">
-              {editingProduct ? '商品详细信息' : '选择商品'}
-            </h3>
-            <p className="text-xs text-slate-400">
-              {editingProduct ? '正在查看或修改选中的商品' : '在左侧列表中点击商品以查看详情'}
-            </p>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {editingProduct ? (
-              <motion.div 
-                key={editingProduct.id}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-5"
-              >
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">商品名称</label>
-                  <input 
-                    type="text" 
-                    value={editingProduct.name}
-                    onChange={e => setEditingProduct({...editingProduct, name: e.target.value})}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">价格 (CNY)</label>
-                  <input 
-                    type="number" 
-                    value={editingProduct.price}
-                    onChange={e => setEditingProduct({...editingProduct, price: Number(e.target.value)})}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">库存数量</label>
-                  <input 
-                    type="number" 
-                    value={editingProduct.stock}
-                    onChange={e => setEditingProduct({...editingProduct, stock: Number(e.target.value)})}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
-                  />
-                </div>
-                
-                <div className="mt-8 pt-6 border-t border-slate-50 space-y-2">
-                  <button 
-                    onClick={() => handleUpdate(editingProduct)}
-                    className="w-full py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors"
-                  >
-                    保存修改
-                  </button>
-                  <button 
-                    onClick={() => setEditingProduct(null)}
-                    className="w-full py-2 bg-white text-slate-600 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                  >
-                    返回列表
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40">
-                <div className="w-16 h-16 rounded-full bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center mb-4">
-                  <Package size={24} className="text-slate-300" />
-                </div>
-                <p className="text-xs font-medium text-slate-400">暂无选中内容</p>
+                        <span className="inline-flex items-center gap-1">
+                          销售价格
+                          {sort === 'price_asc' && <span className="text-blue-600">↑</span>}
+                          {sort === 'price_desc' && <span className="text-blue-600">↓</span>}
+                        </span>
+                      </th>
+                      <th 
+                        className="px-6 py-4 cursor-pointer hover:text-blue-600 transition-colors select-none"
+                        onClick={() => handleSort(sort === 'stock_asc' ? 'stock_desc' : sort === 'stock_desc' ? '' : 'stock_desc')}
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          当前库存
+                          {sort === 'stock_asc' && <span className="text-blue-600">↑</span>}
+                          {sort === 'stock_desc' && <span className="text-blue-600">↓</span>}
+                        </span>
+                      </th>
+                      <th className="px-6 py-4 text-right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm divide-y divide-slate-50">
+                    {products.map(product => (
+                      <tr 
+                        key={product.id}
+                        onClick={() => setEditingProduct(product)}
+                        className={`hover:bg-blue-50/30 transition-all group cursor-pointer border-l-2 ${
+                          editingProduct?.id === product.id ? 'border-l-blue-500 bg-blue-50/50' : 'border-l-transparent hover:border-l-blue-500'
+                        }`}
+                      >
+                        <td className="px-6 py-5 font-medium text-slate-900">{product.name}</td>
+                        <td className="px-6 py-5 text-slate-500">¥{product.price.toLocaleString()}</td>
+                        <td className="px-6 py-5">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            product.stock < 10 ? 'bg-red-50 text-red-700' : product.stock < 50 ? 'bg-yellow-50 text-yellow-700' : 'bg-green-50 text-green-700'
+                          }`}>
+                            {product.stock} 件
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <button 
+                            onClick={(e) => handleDelete(product.id, e)}
+                            className="text-slate-400 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-          </AnimatePresence>
-        </div>
+
+              <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+                <p className="text-xs font-semibold text-slate-400">第 {currentPage} / {totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize)} 页</p>
+                <div className="flex gap-2">
+                  <button 
+                    disabled={currentPage === 1}
+                    onClick={(e) => { e.stopPropagation(); setCurrentPage(prev => Math.max(1, prev - 1)); }}
+                    className="px-3 py-1 text-xs font-bold bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-slate-600"
+                  >
+                    上一页
+                  </button>
+                  <button 
+                    disabled={currentPage === Math.ceil(totalCount / pageSize) || totalCount === 0}
+                    onClick={(e) => { e.stopPropagation(); setCurrentPage(prev => Math.min(Math.ceil(totalCount / pageSize), prev + 1)); }}
+                    className="px-3 py-1 text-xs font-bold bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-slate-600"
+                  >
+                    下一页
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Edit Panel */}
+            <div className="w-80 bg-white border border-blue-100 rounded-xl shadow-sm p-6 flex flex-col shrink-0">
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-slate-900 mb-1">
+                  {editingProduct ? '商品详细信息' : '选择商品'}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {editingProduct ? '正在查看或修改选中的商品' : '在左侧列表中点击商品以查看详情'}
+                </p>
+              </div>
+
+              <AnimatePresence mode="wait">
+                {editingProduct ? (
+                  <motion.div 
+                    key={editingProduct.id}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-5"
+                  >
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">商品名称</label>
+                      <input 
+                        type="text" 
+                        value={editingProduct.name}
+                        onChange={e => setEditingProduct({...editingProduct, name: e.target.value})}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">价格 (CNY)</label>
+                      <input 
+                        type="text" 
+                        value={editingProduct.price}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^\d]/g, '');
+                          if (val === '' || (Number(val) >= 0 && Number(val) <= 999)) {
+                            setEditingProduct({...editingProduct, price: val === '' ? 0 : Number(val)});
+                          }
+                        }}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">库存数量</label>
+                      <input 
+                        type="text" 
+                        value={editingProduct.stock}
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^\d]/g, '');
+                          if (val === '' || (Number(val) >= 0 && Number(val) <= 999)) {
+                            setEditingProduct({...editingProduct, stock: val === '' ? 0 : Number(val)});
+                          }
+                        }}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
+                      />
+                    </div>
+                    
+                    <div className="mt-8 pt-6 border-t border-slate-50 space-y-2">
+                      <button 
+                        onClick={() => handleUpdate(editingProduct)}
+                        className="w-full py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors"
+                      >
+                        保存修改
+                      </button>
+                      <button 
+                        onClick={() => setEditingProduct(null)}
+                        className="w-full py-2 bg-white text-slate-600 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                      >
+                        返回列表
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40">
+                    <div className="w-16 h-16 rounded-full bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center mb-4">
+                      <Package size={24} className="text-slate-300" />
+                    </div>
+                    <p className="text-xs font-medium text-slate-400">暂无选中内容</p>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </>
+        )}
       </div>
 
       {isModalOpen && (
@@ -488,18 +728,28 @@ function ProductModal({ product, onClose, onSubmit }: { product?: Product, onClo
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">价格 (CNY)</label>
               <input 
-                type="number" 
+                type="text" 
                 value={formData.price}
-                onChange={e => setFormData({...formData, price: Number(e.target.value)})}
+                onChange={e => {
+                  const val = e.target.value.replace(/[^\d]/g, '');
+                  if (val === '' || (Number(val) >= 0 && Number(val) <= 999)) {
+                    setFormData({...formData, price: val === '' ? 0 : Number(val)});
+                  }
+                }}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
               />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">库存数量</label>
               <input 
-                type="number" 
+                type="text" 
                 value={formData.stock}
-                onChange={e => setFormData({...formData, stock: Number(e.target.value)})}
+                onChange={e => {
+                  const val = e.target.value.replace(/[^\d]/g, '');
+                  if (val === '' || (Number(val) >= 0 && Number(val) <= 999)) {
+                    setFormData({...formData, stock: val === '' ? 0 : Number(val)});
+                  }
+                }}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all font-medium"
               />
             </div>
@@ -516,12 +766,35 @@ function ProductModal({ product, onClose, onSubmit }: { product?: Product, onClo
   );
 }
 
-function OrderManagement({ orders }: { orders: Order[], key?: string }) {
+function OrderManagement({ key }: { key?: string }) {
+  const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const pageSize = 5;
 
-  const totalPages = Math.ceil(orders.length / pageSize);
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      const res = await ordersApi.getList(1, 100);
+      const items = res.items.map(item => ({
+        id: item.id,
+        goods_info: item.goods_info,
+        total_price: item.total_price,
+        order_time: item.order_time,
+        status: item.status as Order['status'],
+      }));
+      setOrders(items);
+      setTotalCount(res.total_count);
+    } catch (err: any) {
+      console.error('加载订单失败:', err.message);
+    }
+  };
+
+  const totalPages = totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const currentOrders = orders.slice(startIndex, startIndex + pageSize);
 
@@ -529,7 +802,7 @@ function OrderManagement({ orders }: { orders: Order[], key?: string }) {
     <div className="flex-1 flex flex-col h-full overflow-hidden">
       <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
         <h2 className="text-xl font-semibold text-slate-900">订单管理</h2>
-        <div className="text-xs text-slate-400 uppercase tracking-widest font-semibold">订单总数: {orders.length}</div>
+        <div className="text-xs text-slate-400 uppercase tracking-widest font-semibold">订单总数: {totalCount}</div>
       </header>
 
       <div className="flex-1 p-8 overflow-hidden flex flex-col">
@@ -539,8 +812,8 @@ function OrderManagement({ orders }: { orders: Order[], key?: string }) {
               <thead className="bg-slate-50/50 border-b border-slate-100 sticky top-0 z-10">
                 <tr className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
                   <th className="px-6 py-4">订单号</th>
-                  <th className="px-6 py-4">商品名称</th>
-                  <th className="px-6 py-4">订单日期</th>
+                  <th className="px-6 py-4">商品信息</th>
+                  <th className="px-6 py-4">下单时间</th>
                   <th className="px-6 py-4">总额</th>
                   <th className="px-6 py-4">状态</th>
                   <th className="px-6 py-4 text-right">操作</th>
@@ -554,9 +827,22 @@ function OrderManagement({ orders }: { orders: Order[], key?: string }) {
                     className="hover:bg-blue-50/30 transition-all group cursor-pointer border-l-2 border-l-transparent hover:border-l-blue-500"
                   >
                     <td className="px-6 py-4 font-mono text-[13px] text-slate-500">{order.id}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{order.productName}</td>
-                    <td className="px-6 py-4 text-slate-400">{order.date}</td>
-                    <td className="px-6 py-4 font-semibold text-blue-600">¥{order.totalPrice.toLocaleString()}</td>
+                    <td className="px-6 py-4">
+                      {order.goods_info ? (
+                        <div className="space-y-1">
+                          {order.goods_info.map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <span className="font-medium text-slate-900">{item.name}</span>
+                              <span className="text-slate-400">x{item.quantity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">未交易</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-slate-400">{order.order_time}</td>
+                    <td className="px-6 py-4 font-semibold text-blue-600">¥{order.total_price.toLocaleString()}</td>
                     <td className="px-6 py-4">
                       <StatusBadge status={order.status} />
                     </td>
@@ -610,13 +896,15 @@ function StatusBadge({ status }: { status: Order['status'] }) {
   const styles = {
     Completed: 'bg-green-50 text-green-700',
     Shipped: 'bg-blue-50 text-blue-700',
-    Pending: 'bg-yellow-50 text-yellow-700'
+    Pending: 'bg-yellow-50 text-yellow-700',
+    Cancelled: 'bg-red-50 text-red-700'
   };
 
   const labels = {
     Completed: '已完成',
     Shipped: '已出库',
-    Pending: '待处理'
+    Pending: '待处理',
+    Cancelled: '已取消'
   };
 
   return (
@@ -645,17 +933,38 @@ function OrderDetailsModal({ order, onClose }: { order: Order, onClose: () => vo
           </button>
         </div>
 
+        <div className="mb-10">
+          <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-4">商品明细</p>
+          {order.goods_info ? (
+            <div className="space-y-3">
+              {order.goods_info.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center p-5 bg-slate-50 rounded-lg border border-slate-200">
+                  <div>
+                    <p className="text-base font-bold text-slate-900">{item.name}</p>
+                    <p className="text-sm text-slate-500 mt-1">单价 ¥{item.single_price.toLocaleString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-base font-bold text-slate-900">x{item.quantity}</p>
+                    <p className="text-lg font-bold text-blue-600 mt-1">¥{(item.single_price * item.quantity).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-slate-50 rounded-lg border border-slate-200">
+              <p className="text-lg font-semibold text-slate-500">未交易</p>
+            </div>
+          )}
+        </div>
+
         <div className="grid grid-cols-2 gap-y-6 gap-x-8 mb-10">
-          <DetailItem label="商品名称" value={order.productName} />
-          <DetailItem label="订单日期" value={order.date} />
-          <DetailItem label="商品单价" value={<span>¥{order.singlePrice.toLocaleString()}</span>} />
-          <DetailItem label="商品数量" value={`x ${order.quantity}`} />
+          <DetailItem label="订单时间" value={order.order_time} />
           <DetailItem label="当前状态" value={<StatusBadge status={order.status} />} />
         </div>
 
-        <div className="p-6 bg-slate-50 border border-slate-100 rounded-lg flex justify-between items-center shadow-inner">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">应付总额</p>
-          <p className="text-2xl font-bold text-blue-600">¥{order.totalPrice.toLocaleString()}</p>
+        <div className="p-8 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl flex justify-between items-center">
+          <p className="text-sm font-bold text-blue-700 uppercase tracking-wider">应付总额</p>
+          <p className="text-4xl font-black text-blue-600">¥{order.total_price.toLocaleString()}</p>
         </div>
 
         <button 
@@ -669,57 +978,71 @@ function OrderDetailsModal({ order, onClose }: { order: Order, onClose: () => vo
   );
 }
 
-function SimulationCenter({ 
-  orders, 
-  setOrders, 
-  products, 
-  setProducts 
-}: { 
-  orders: Order[], 
-  setOrders: React.Dispatch<React.SetStateAction<Order[]>>,
-  products: Product[],
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>
-}) {
+function SimulationCenter({ key }: { key?: string }) {
+  const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [beforeImage, setBeforeImage] = useState<File | null>(null);
+  const [afterImage, setAfterImage] = useState<File | null>(null);
+  const [beforePreview, setBeforePreview] = useState<string>('');
+  const [afterPreview, setAfterPreview] = useState<string>('');
+  const [result, setResult] = useState<Order | null>(null);
+  const beforeInputRef = useRef<HTMLInputElement>(null);
+  const afterInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBeforeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setBeforeImage(file);
+    setBeforePreview(URL.createObjectURL(file));
+    setResult(null);
+  };
+
+  const handleAfterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAfterImage(file);
+    setAfterPreview(URL.createObjectURL(file));
+    setResult(null);
+  };
+
+  const handleSimulate = async () => {
+    if (!beforeImage || !afterImage) {
+      showToast('请上传开门前和关门后的图片', 'error');
+      return;
+    }
 
     setIsSimulating(true);
-    
-    // 模拟数据
-    setTimeout(() => {
-      const mockItems = [
-        { name: '营养快线', quantity: 1, price: 5 },
-        { name: '元气水', quantity: 1, price: 3 }
-      ];
-
-      const newOrders: Order[] = mockItems.map((item) => ({
-        id: 'SIM-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
-        productName: item.name,
-        quantity: item.quantity,
-        singlePrice: item.price,
-        totalPrice: item.price * item.quantity,
-        date: new Date().toISOString().split('T')[0],
-        status: 'Completed'
-      }));
-
-      setOrders(prev => [...newOrders, ...prev]);
-      
-      setProducts(prev => prev.map(p => {
-        const matched = mockItems.find(i => i.name === p.name);
-        if (matched) {
-          return { ...p, stock: Math.max(0, p.stock - matched.quantity) };
-        }
-        return p;
-      }));
-      
+    try {
+      const order = await ordersApi.simulate(beforeImage, afterImage);
       setIsSimulating(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      alert(`识别成功！已自动结算: ${mockItems.map(i => i.name).join(', ')}`);
-    }, 1000);
+      
+      const cancelled = order.status === 'Cancelled';
+      setResult(order);
+      
+      if (cancelled) {
+        showToast('未检测到商品变化，订单已取消', 'info');
+      } else {
+        const names = order.goods_info?.map(o => `${o.name} x${o.quantity}`).join(', ') || '';
+        showToast(`订单已完成: ${names}`, 'success');
+      }
+    } catch (err: any) {
+      showToast(err.message, 'error');
+      setIsSimulating(false);
+    }
+  };
+
+  const handleReset = () => {
+    setBeforeImage(null);
+    setAfterImage(null);
+    setBeforePreview('');
+    setAfterPreview('');
+    setResult(null);
+    if (beforeInputRef.current) beforeInputRef.current.value = '';
+    if (afterInputRef.current) afterInputRef.current.value = '';
+  };
+
+  const handleViewOrders = () => {
+    navigate('/orders');
   };
 
   return (
@@ -729,46 +1052,127 @@ function SimulationCenter({
         <div className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Vending Simulation</div>
       </header>
 
-      <div className="flex-1 p-8 flex items-center justify-center">
-        <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-[2rem] p-16 flex flex-col items-center justify-center text-center shadow-sm">
-          <div className="w-24 h-24 bg-blue-50 rounded-[2rem] flex items-center justify-center text-blue-600 mb-8 font-bold shadow-inner">
-            {isSimulating ? <Loader2 size={40} className="animate-spin" /> : <Camera size={40} />}
-          </div>
-          <h3 className="text-2xl font-bold mb-3 text-slate-900">模拟关门结算场景</h3>
-          <p className="text-base text-slate-400 max-w-md mb-10 leading-relaxed font-medium">
-            用户在自助柜挑选商品并关门后，系统将自动分析内部画面并生成订单记录。
-          </p>
-          
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            accept="image/*" 
-            className="hidden" 
-          />
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isSimulating}
-            className="px-12 py-5 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-4 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/20 active:scale-95 disabled:opacity-50 transition-all duration-300"
-          >
-            {isSimulating ? <Loader2 size={24} className="animate-spin" /> : <Play size={24} />}
-            {isSimulating ? '智能解析中...' : '识别分析图片 (模拟关门动作)'}
-          </button>
-          
-          <div className="mt-12 pt-8 border-t border-slate-50 w-full flex justify-center gap-12 text-[11px] font-bold text-slate-300 uppercase tracking-[0.2em]">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              视觉识别引擎
+      <div className="flex-1 p-8 overflow-auto">
+        <div className="max-w-4xl mx-auto">
+          {!result ? (
+            <>
+              <div className="grid grid-cols-2 gap-6 mb-8">
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <h3 className="text-sm font-bold text-slate-700 mb-4">开门前</h3>
+                  <input 
+                    type="file" 
+                    ref={beforeInputRef} 
+                    onChange={handleBeforeChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                  {beforePreview ? (
+                    <div className="relative">
+                      <img src={beforePreview} alt="开门前" className="w-full h-48 object-cover rounded-lg" />
+                      <button 
+                        onClick={handleReset}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => beforeInputRef.current?.click()}
+                      className="w-full h-48 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                    >
+                      <Camera size={32} className="mb-2" />
+                      <span className="text-sm">点击上传</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <h3 className="text-sm font-bold text-slate-700 mb-4">关门后</h3>
+                  <input 
+                    type="file" 
+                    ref={afterInputRef} 
+                    onChange={handleAfterChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                  {afterPreview ? (
+                    <div className="relative">
+                      <img src={afterPreview} alt="关门后" className="w-full h-48 object-cover rounded-lg" />
+                      <button 
+                        onClick={handleReset}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => afterInputRef.current?.click()}
+                      className="w-full h-48 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                    >
+                      <Camera size={32} className="mb-2" />
+                      <span className="text-sm">点击上传</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <button 
+                onClick={handleSimulate}
+                disabled={isSimulating || !beforeImage || !afterImage}
+                className="w-full px-12 py-5 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-4 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                {isSimulating ? <Loader2 size={24} className="animate-spin" /> : <Play size={24} />}
+                {isSimulating ? '智能解析中...' : '开始识别对比'}
+              </button>
+            </>
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
+              <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${result.status === 'Cancelled' ? 'bg-yellow-50' : 'bg-green-50'}`}>
+                {result.status === 'Cancelled' ? (
+                  <X size={40} className="text-yellow-500" />
+                ) : (
+                  <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {result.status === 'Cancelled' ? '订单已取消' : '订单已完成'}
+              </h3>
+              <p className="text-slate-500 mb-6">
+                {result.status === 'Cancelled' ? '未检测到商品变化' : '商品变化已记录'}
+              </p>
+              
+              {result.goods_info && result.goods_info.length > 0 && (
+                <div className="mb-6 p-4 bg-slate-50 rounded-lg text-left">
+                  {result.goods_info.map((item, idx) => (
+                    <div key={idx} className="flex justify-between py-2 border-b border-slate-100 last:border-0">
+                      <span className="text-slate-700 font-medium">{item.name}</span>
+                      <span className="text-slate-500">x{item.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-4 justify-center">
+                <button 
+                  onClick={handleReset}
+                  className="px-8 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50 transition-colors"
+                >
+                  继续识别
+                </button>
+                <button 
+                  onClick={handleViewOrders}
+                  className="px-8 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                  <ShoppingCart size={18} />
+                  查看订单
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              自动结算系统
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              库存实时同步
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -778,8 +1182,8 @@ function SimulationCenter({
 function DetailItem({ label, value }: { label: string, value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">{label}</p>
-      <div className="text-slate-900 font-semibold text-sm">{value}</div>
+      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{label}</p>
+      <div className="text-slate-900 font-semibold text-base">{value}</div>
     </div>
   );
 }
