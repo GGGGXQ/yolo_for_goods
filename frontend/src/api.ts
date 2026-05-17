@@ -70,7 +70,9 @@ export const userApi = {
   async sendCaptcha(email: string) {
     const res = await request(`${API_BASE_URL}/users/captcha`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ email }),
     });
     if (!res.ok) {
@@ -83,7 +85,9 @@ export const userApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {
     const res = await request(`${API_BASE_URL}/users/login`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
     });
     if (!res.ok) {
