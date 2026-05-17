@@ -103,13 +103,18 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  if (isLoggedIn && location.pathname === '/login') {
+    navigate('/products', { replace: true });
+    return null;
+  }
+
   if (!isLoggedIn && location.pathname !== '/login') {
     return <Navigate to="/login" replace />;
   }
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginScreen onLogin={() => { setIsLoggedIn(true); navigate('/products'); }} />} />
+      <Route path="/login" element={<LoginScreen setIsLoggedIn={setIsLoggedIn} />} />
       <Route path="/" element={user ? <Layout user={user} setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" replace />}>
         <Route index element={<Navigate to="/products" replace />} />
         <Route path="products" element={<ProductManagement />} />
@@ -226,13 +231,14 @@ function NavButton({ active, onClick, icon, label }: { active: boolean, onClick:
   );
 }
 
-function LoginScreen({ onLogin }: { onLogin: () => void }) {
-  const [email, setEmail] = useState(localStorage.getItem('login_email') || '');
+function LoginScreen({ setIsLoggedIn }: { setIsLoggedIn: (val: boolean) => void }) {
+  const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [sendingCaptcha, setSendingCaptcha] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(0);
+  const navigate = useNavigate();
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
@@ -279,7 +285,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
     setError('');
     try {
       await userApi.login({ email, code });
-      onLogin();
+      setIsLoggedIn(true);
+      window.location.href = '/products';
     } catch (err: any) {
       setError(err.message);
     } finally {
